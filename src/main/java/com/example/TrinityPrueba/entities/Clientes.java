@@ -15,7 +15,7 @@ public class Clientes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    private String tipoDeidentificacion;
+    private String tipoDeIdentificacion;
 
     private String numeroIdentificacion;
 
@@ -47,12 +47,12 @@ public class Clientes {
         Id = id;
     }
 
-    public String getTipoDeidentificacion() {
-        return tipoDeidentificacion;
+    public String getTipoDeIdentificacion() {
+        return tipoDeIdentificacion;
     }
 
-    public void setTipoDeidentificacion(String tipoDeidentificacion) {
-        this.tipoDeidentificacion = tipoDeidentificacion;
+    public void setTipoDeIdentificacion(String tipoDeidentificacion) {
+        this.tipoDeIdentificacion = tipoDeidentificacion;
     }
 
     public String getNumeroIdentificacion() {
