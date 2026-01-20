@@ -9,6 +9,8 @@ import java.util.List;
 @Table
 public class Clientes {
 
+    //Correcion pendiente
+    @OneToMany
     private List<Productos> tipoDeCuenta;
 
     @Id
