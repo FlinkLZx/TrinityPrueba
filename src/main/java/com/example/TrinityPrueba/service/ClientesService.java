@@ -8,9 +8,11 @@ public interface ClientesService {
 
     List<Clientes> getClientes();
 
-    void createClientes(Clientes clientes) throws Exception;
+    Clientes createClientes(Clientes clientes) throws Exception;
 
-    void updateClientes(Clientes clientes);
+    Clientes getClientesByID(Long id) throws Exception;
 
-    void deleteClientes(Clientes clientes);
+    Clientes updateClientes(Long id, Clientes clientes) throws Exception;
+
+    void deleteClientes(Long id) throws Exception;
 }

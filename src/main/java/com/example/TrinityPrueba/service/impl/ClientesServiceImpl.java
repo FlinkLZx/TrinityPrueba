@@ -2,37 +2,44 @@ package com.example.TrinityPrueba.service.impl;
 
 import com.example.TrinityPrueba.entities.Clientes;
 import com.example.TrinityPrueba.repository.ClientesRepository;
+import com.example.TrinityPrueba.repository.ProductosRepository;
 import com.example.TrinityPrueba.service.ClientesService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 
 @Service
 public class ClientesServiceImpl implements ClientesService {
 
     private final ClientesRepository clientesRepository;
+    private final ProductosRepository productosRepository;
 
-    public ClientesServiceImpl(ClientesRepository clientesRepository) {
+    public ClientesServiceImpl(ClientesRepository clientesRepository, ProductosRepository productosRepository) {
         this.clientesRepository = clientesRepository;
+        this.productosRepository = productosRepository;
     }
 
     @Override
-    public void createClientes(Clientes clientes) throws Exception {
-        LocalDate fechaMinima = LocalDate.parse("2007-01-01");
-        LocalDate fechaNacimiento = LocalDate.parse(clientes.getNacimiento());
+    public Clientes createClientes(Clientes clientes) throws Exception {
 
-        if(fechaNacimiento.isAfter(fechaMinima)) {
-            throw new Exception("Debe ser mayor a 18 años para poder crear una cuenta!");
+        int edad = Period.between(clientes.getNacimiento(), LocalDate.now()).getYears();
+        if (edad < 18) {
+            throw new Exception("El cliente debe ser mayor de edad");
         }
-        LocalDateTime fechaCreacion = LocalDateTime.now();
-        LocalDateTime fechaModificacion = LocalDateTime.now();
-        clientes.setCreacion(fechaCreacion.toString());
-        clientes.setModificacion(fechaModificacion.toString());
-        clientes.setNacimiento(fechaNacimiento.toString());
-        clientesRepository.save(clientes);
+
+        if (clientes.getNombre().length() < 2 || clientes.getApellido().length() < 2 ) {
+            throw new Exception("Nombre y apellido invalidos");
+        }
+
+        clientes.setCreacion(LocalDateTime.now());
+        clientes.setModificacion(null);
+
+        return clientesRepository.save(clientes);
     }
+
 
     @Override
     public List<Clientes> getClientes() {
@@ -40,20 +47,35 @@ public class ClientesServiceImpl implements ClientesService {
     }
 
     @Override
-    public void updateClientes(Clientes clientes) {
-        Clientes currentCliente = clientesRepository.findById(clientes.getId()).get();
-        currentCliente.setTipoDeIdentificacion(clientes.getTipoDeIdentificacion());
-        currentCliente.setNumeroIdentificacion(clientes.getNumeroIdentificacion());
-        currentCliente.setNombre(clientes.getNombre());
-        currentCliente.setApellido(clientes.getApellido());
-        currentCliente.setMail(clientes.getMail());
-        currentCliente.setNacimiento(clientes.getNacimiento());
-        currentCliente.setModificacion(clientes.getModificacion());
-        clientesRepository.save(currentCliente);
+    public Clientes getClientesByID(Long id) throws Exception {
+        return clientesRepository.findById(id).orElseThrow(() -> new Exception("Cliente no encontrado"));
     }
 
+
     @Override
-    public void deleteClientes(Clientes clientes) {
-        clientesRepository.deleteById(clientes.getId());
+    public Clientes updateClientes(Long id, Clientes clientes) throws Exception {
+
+        Clientes current = clientesRepository.findById(id)
+                .orElseThrow(() -> new Exception("El cliente no existe"));
+
+        current.setNombre(clientes.getNombre());
+        current.setApellido(clientes.getApellido());
+        current.setMail(clientes.getMail());
+
+        current.setModificacion(LocalDateTime.now());
+
+        return clientesRepository.save(current);
+    }
+
+
+    @Override
+    public void deleteClientes(Long id) throws Exception {
+
+        Clientes cliente = clientesRepository.findById(id).orElseThrow(() -> new Exception("El cliente no existe"));
+
+        boolean tieneProductos = productosRepository.existsByDueñoId(cliente.getId());
+        if (tieneProductos) {
+            throw new Exception("No se puede eliminar un cliente con productos asociados");
+        }
     }
 }
