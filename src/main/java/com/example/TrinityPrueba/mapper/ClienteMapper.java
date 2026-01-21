@@ -1,6 +1,7 @@
 package com.example.TrinityPrueba.mapper;
 
-import com.example.TrinityPrueba.dtos.ClienteDto;
+import com.example.TrinityPrueba.dtos.ClienteRequestDto;
+import com.example.TrinityPrueba.dtos.ClienteResponseDto;
 import com.example.TrinityPrueba.entities.Clientes;
 import org.springframework.stereotype.Component;
 
@@ -9,23 +10,36 @@ import java.util.stream.Collectors;
 
 @Component
 public class ClienteMapper {
-    public List<ClienteDto> toDto(List<Clientes> clientes) {
-        return clientes.stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+
+    public Clientes toEntity(ClienteRequestDto dto) {
+        Clientes cliente = new Clientes();
+        cliente.setTipoDeIdentificacion(dto.getTipoDeIdentificacion());
+        cliente.setNumeroIdentificacion(dto.getNumeroIdentificacion());
+        cliente.setNombre(dto.getNombre());
+        cliente.setApellido(dto.getApellido());
+        cliente.setMail(dto.getMail());
+        cliente.setNacimiento(dto.getNacimiento());
+
+        return cliente;
     }
 
-    public ClienteDto toDto(Clientes cliente) {
-        ClienteDto dto = new ClienteDto();
-
+    public ClienteResponseDto toResponse(Clientes cliente) {
+        ClienteResponseDto dto = new ClienteResponseDto();
         dto.setId(cliente.getId());
+        dto.setTipoDeIdentificacion(cliente.getTipoDeIdentificacion());
+        dto.setNumeroIdentificacion(cliente.getNumeroIdentificacion());
         dto.setNombre(cliente.getNombre());
         dto.setApellido(cliente.getApellido());
         dto.setMail(cliente.getMail());
-        dto.setTipoDeIdentificacion(cliente.getTipoDeIdentificacion());
-        dto.setNumeroIdentificacion(cliente.getNumeroIdentificacion());
+        dto.setNacimiento(cliente.getNacimiento());
         dto.setCreacion(cliente.getCreacion());
+        dto.setModificacion(cliente.getModificacion());
 
         return dto;
     }
+
+    public List<ClienteResponseDto> toResponseList(List<Clientes> clientes) {
+        return clientes.stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
 }
