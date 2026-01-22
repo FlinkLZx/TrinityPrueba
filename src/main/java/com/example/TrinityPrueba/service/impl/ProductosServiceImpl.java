@@ -1,12 +1,18 @@
 package com.example.TrinityPrueba.service.impl;
 
+import com.example.TrinityPrueba.entities.Clientes;
 import com.example.TrinityPrueba.entities.Productos;
 import com.example.TrinityPrueba.repository.ClientesRepository;
 import com.example.TrinityPrueba.repository.ProductosRepository;
 import com.example.TrinityPrueba.service.ProductosService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.ID;
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
 public class ProductosServiceImpl implements ProductosService {
@@ -25,54 +31,74 @@ public class ProductosServiceImpl implements ProductosService {
     }
 
     @Override
-    public void createProductos (Productos productos) throws Exception {
-        if (!clientesRepository.existsById(productos.getDueño().getId())) {
-            throw new Exception("El id del clientes no existe");
-        }
-        productos.setDueño(clientesRepository.findById(productos.getDueño().getId()).get());
-        productos.setExentaGMF(Boolean.FALSE);
+    public Productos createProductos (Productos productos) throws Exception {
+        Long clienteId = productos.getDueño().getId();
+        Clientes cliente = clientesRepository.findById(clienteId).orElseThrow(() -> new Exception("El cliente no existe"));
 
-        if (!productos.getTipoDeCuenta().equals("Ahorros") || !productos.getTipoDeCuenta().equals("Corriente")) {
+        if (!productos.getTipoDeCuenta().equals("Ahorros") && !productos.getTipoDeCuenta().equals("Corriente")) {
             throw new Exception("El tipo de cuenta no es valido!");
         }
-        productosRepository.save(productos);
 
-        if (!productos.getEstadoCuenta().equals("Activo") || !productos.getEstadoCuenta().equals("Inactivo") || !productos.getTipoDeCuenta().equals("Cancelada")) {
-            throw new Exception("El estado de cuenta no es valido!");
-        }
-        productosRepository.save(productos);
+        productos.setDueño(cliente);
+        productos.setEstadoCuenta("Activa");
+        productos.setSaldo(BigDecimal.ZERO);
+        productos.setExentaGMF(false);
+        productos.setCreacion(LocalDateTime.now());
 
-        //hacer logica de cuenta exenta y hacer el mapeo de cuentas ya existentes con ese exento
-        if (productos.getExentaGMF().equals(Boolean.FALSE)) {
-
-        } else if (productos.getExentaGMF().equals(Boolean.TRUE)) {
-
-        }
+        return productosRepository.save(productos);
     }
 
     @Override
-    public void updateProductos (Productos productos) throws Exception {
-        Productos currentProductos = productosRepository.findById(productos.getId()).get();
-        if (!currentProductos.getEstadoCuenta().equals("Activo") || !currentProductos.getEstadoCuenta().equals("Inactivo") ) {
-            throw new Exception("El estado de cuenta no es valido!");
-        }
-        currentProductos.setEstadoCuenta(productos.getEstadoCuenta());
-        productosRepository.save(productos);
+    public Productos updateProductos (Long id, Productos productos) throws Exception {
 
-        //Terminar la logica de aca
-        Productos currentProductosExenta = productosRepository.findById(productos.getId())
-                .orElseThrow(() -> new Exception("El id del cliente no existe!"));
-        if (currentProductosExenta.getExentaGMF().equals(Boolean.TRUE)) {
-            throw new Exception("La cuenta ya se encuentra exenta!");
+        Productos actual= productosRepository.findById(id).orElseThrow(() -> new Exception("El producto no existe"));
+
+        if (productos.getEstadoCuenta() != null) {
+            if (!productos.getEstadoCuenta().equals("Activa") &&
+                !productos.getEstadoCuenta().equals("Inactiva") &&
+                !productos.getEstadoCuenta().equals("Cancelada")) {
+                throw new Exception("Estado de cuenta no valido");
+            }
+
+            actual.setEstadoCuenta(productos.getEstadoCuenta());
         }
-        currentProductosExenta.setExentaGMF(productos.getExentaGMF());
+
+        if (productos.getExentaGMF() != null && productos.getExentaGMF()) {
+
+            if (actual.getExentaGMF()) {
+                throw new Exception("La cuenta ya es exenta GMF");
+            }
+
+            boolean clienteYaTieneExenta = productosRepository.existsByDueñoIdAndExentaGMFTrue(
+                    actual.getDueño().getId()
+            );
+
+            if (clienteYaTieneExenta) {
+                throw new Exception("El cliente ya tiene una cuenta exenta GMF");
+            }
+
+            actual.setExentaGMF(true);
+        }
+
+        actual.setModificacion(LocalDateTime.now());
+
+        return productosRepository.save(actual);
     }
 
     @Override
-    public void deleteProductos(Productos productos) throws Exception {
-        if (!productos.getSaldo().equals("0")) {
-            throw new Exception("No se puede eliminar una cuenta con saldo disponible!");
+    public void deleteProductos(Long id) throws Exception {
+
+        Productos producto = productosRepository.findById(id)
+                .orElseThrow(() -> new Exception("El producto no existe"));
+
+        if (producto.getSaldo().compareTo(BigDecimal.ZERO) != 0) {
+            throw new Exception("No se puede eliminar una cuenta con saldo");
         }
-        productosRepository.deleteById(productos.getId());
+
+        if (!producto.getEstadoCuenta().equals("Cancelada")) {
+            throw new Exception("La cuenta debe ser Cancelada para eliminarse");
+        }
+
+        productosRepository.deleteById(id);
     }
 }
