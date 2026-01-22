@@ -1,6 +1,7 @@
 package com.example.TrinityPrueba.service;
 
 import com.example.TrinityPrueba.entities.Productos;
+import com.example.TrinityPrueba.service.impl.ProductosServiceImpl;
 
 import java.util.List;
 
@@ -8,9 +9,9 @@ public interface ProductosService {
 
     List<Productos> getProductos();
 
-    void createProductos(Productos productos) throws Exception;
+    Productos createProductos(Productos productos) throws Exception;
 
-    void updateProductos(Productos productos) throws Exception;
+    Productos updateProductos(Long id, Productos productos) throws Exception;
 
-    void deleteProductos(Productos productos) throws Exception;
+    void deleteProductos(Long id) throws Exception;
 }
