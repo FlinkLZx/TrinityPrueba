@@ -1,12 +1,11 @@
 package com.example.TrinityPrueba.controllers;
 
+import com.example.TrinityPrueba.dtos.ProductoRequestDto;
+import com.example.TrinityPrueba.dtos.ProductoResponseDto;
 import com.example.TrinityPrueba.entities.Productos;
-import com.example.TrinityPrueba.service.ClientesService;
+import com.example.TrinityPrueba.mapper.ProductoMapper;
 import com.example.TrinityPrueba.service.ProductosService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,30 +14,38 @@ import java.util.List;
 public class ProductosController {
 
     private final ProductosService productosService;
-    private final ClientesService clientesService;
+    private final ProductoMapper productoMapper;
 
-    public ProductosController(ProductosService productosService, ClientesService clientesService) {
+    public ProductosController(ProductosService productosService, ProductoMapper productoMapper) {
         this.productosService = productosService;
-        this.clientesService = clientesService;
+        this.productoMapper = productoMapper;
     }
 
-    @GetMapping("/get")
-    public List<Productos> getProductos() {
-        return productosService.getProductos();
+    @GetMapping
+    public List<ProductoResponseDto> getProductos() {
+        return productoMapper.toResponse(
+                productosService.getProductos()
+        );
     }
 
-    @GetMapping("/update")
-    public void updateProductos(@RequestBody Productos productos) throws Exception {
-        productosService.updateProductos(productos);
+    @PutMapping("/{id}")
+    public ProductoResponseDto updateProductos(@PathVariable Long id, @RequestBody ProductoRequestDto dto) throws Exception {
+        Productos producto = productoMapper.toEntity(dto);
+        Productos update = productosService.updateProductos(id, producto);
+
+        return productoMapper.toResponse(update);
     }
 
-    @GetMapping("/create")
-    public void createProductos(Productos productos) throws Exception {
-        productosService.createProductos(productos);
+    @PostMapping
+    public ProductoResponseDto createProductos(@RequestBody ProductoRequestDto dto) throws Exception {
+        Productos producto = productoMapper.toEntity(dto);
+        Productos saved = productosService.createProductos(producto);
+
+        return productoMapper.toResponse(saved);
     }
 
-    @GetMapping("/delete")
-    public void deleteProductos(Productos productos) throws Exception {
-        productosService.deleteProductos(productos);
+    @DeleteMapping("/{id}")
+    public void deleteProductos(@PathVariable Long id) throws Exception {
+        productosService.deleteProductos(id);
     }
 }
