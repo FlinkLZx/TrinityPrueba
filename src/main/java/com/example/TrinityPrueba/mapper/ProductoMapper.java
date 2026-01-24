@@ -19,7 +19,7 @@ public class ProductoMapper {
             Clientes cliente = new Clientes();
             cliente.setId(dto.getClienteId());
 
-            producto.setDueño(cliente);
+            producto.setCliente(cliente);
         }
 
         producto.setExentaGMF(dto.getExentaGMF());
@@ -37,7 +37,7 @@ public class ProductoMapper {
         dto.setEstadoCuenta(producto.getEstadoCuenta());
         dto.setExentaGMF(producto.getExentaGMF());
         dto.setSaldo(producto.getSaldo());
-        dto.setClienteId(producto.getDueño().getId());
+        dto.setClienteId(producto.getCliente().getId());
         dto.setCreacion(producto.getCreacion());
 
         return dto;
