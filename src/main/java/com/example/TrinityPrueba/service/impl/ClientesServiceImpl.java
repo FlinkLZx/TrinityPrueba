@@ -73,7 +73,7 @@ public class ClientesServiceImpl implements ClientesService {
 
         Clientes cliente = clientesRepository.findById(id).orElseThrow(() -> new Exception("El cliente no existe"));
 
-        boolean tieneProductos = productosRepository.existsByDueñoId(cliente.getId());
+        boolean tieneProductos = productosRepository.existsByClienteId(cliente.getId());
         if (tieneProductos) {
             throw new Exception("No se puede eliminar un cliente con productos asociados");
         }
