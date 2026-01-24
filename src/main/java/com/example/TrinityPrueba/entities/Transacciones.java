@@ -1,6 +1,10 @@
 package com.example.TrinityPrueba.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CollectionId;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table
@@ -10,15 +14,21 @@ public class Transacciones {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    private String tipoDeTransaccion;
+   @ManyToOne(optional = false)
+   @JoinColumn(nullable = false)
+   private Productos producto;
 
-    private Float dinero;
+   @Column(nullable = false)
+   private String tipoTransaccion;
 
-    @ManyToOne
-    private Productos destinatario;
+   @Column(nullable = false)
+   private BigDecimal monto;
 
-    @ManyToOne
-    private Productos emisor;
+   @Column(nullable = false)
+   private BigDecimal GMF;
+
+   @Column(nullable = false)
+    private LocalDateTime fechaTransaccion;
 
     public Long getId() {
         return Id;
@@ -28,35 +38,43 @@ public class Transacciones {
         Id = id;
     }
 
-    public String getTipoDeTransaccion() {
-        return tipoDeTransaccion;
+    public Productos getProducto() {
+        return producto;
     }
 
-    public void setTipoDeTransaccion(String tipoDeTransaccion) {
-        this.tipoDeTransaccion = tipoDeTransaccion;
+    public void setProducto(Productos producto) {
+        this.producto = producto;
     }
 
-    public Float getDinero() {
-        return dinero;
+    public String getTipoTransaccion() {
+        return tipoTransaccion;
     }
 
-    public void setDinero(Float dinero) {
-        this.dinero = dinero;
+    public void setTipoTransaccion(String tipoTransaccion) {
+        this.tipoTransaccion = tipoTransaccion;
     }
 
-    public Productos getDestinatario() {
-        return destinatario;
+    public BigDecimal getMonto() {
+        return monto;
     }
 
-    public void setDestinatario(Productos destinatario) {
-        this.destinatario = destinatario;
+    public void setMonto(BigDecimal monto) {
+        this.monto = monto;
     }
 
-    public Productos getEmisor() {
-        return emisor;
+    public BigDecimal getGMF() {
+        return GMF;
     }
 
-    public void setEmisor(Productos emisor) {
-        this.emisor = emisor;
+    public void setGMF(BigDecimal GMF) {
+        this.GMF = GMF;
+    }
+
+    public LocalDateTime getFechaTransaccion() {
+        return fechaTransaccion;
+    }
+
+    public void setFechaTransaccion(LocalDateTime fechaTransaccion) {
+        this.fechaTransaccion = fechaTransaccion;
     }
 }
