@@ -1,7 +1,6 @@
 package com.example.TrinityPrueba.service;
 
 import com.example.TrinityPrueba.entities.Productos;
-import com.example.TrinityPrueba.service.impl.ProductosServiceImpl;
 
 import java.util.List;
 
