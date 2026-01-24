@@ -32,14 +32,14 @@ public class ProductosServiceImpl implements ProductosService {
 
     @Override
     public Productos createProductos (Productos productos) throws Exception {
-        Long clienteId = productos.getDueño().getId();
+        Long clienteId = productos.getCliente().getId();
         Clientes cliente = clientesRepository.findById(clienteId).orElseThrow(() -> new Exception("El cliente no existe"));
 
         if (!productos.getTipoDeCuenta().equals("Ahorros") && !productos.getTipoDeCuenta().equals("Corriente")) {
             throw new Exception("El tipo de cuenta no es valido!");
         }
 
-        productos.setDueño(cliente);
+        productos.setCliente(cliente);
         productos.setEstadoCuenta("Activa");
         productos.setSaldo(BigDecimal.ZERO);
         productos.setExentaGMF(false);
@@ -69,8 +69,8 @@ public class ProductosServiceImpl implements ProductosService {
                 throw new Exception("La cuenta ya es exenta GMF");
             }
 
-            boolean clienteYaTieneExenta = productosRepository.existsByDueñoIdAndExentaGMFTrue(
-                    actual.getDueño().getId()
+            boolean clienteYaTieneExenta = productosRepository.existsByClienteIdAndExentaGMFTrue(
+                    actual.getCliente().getId()
             );
 
             if (clienteYaTieneExenta) {
