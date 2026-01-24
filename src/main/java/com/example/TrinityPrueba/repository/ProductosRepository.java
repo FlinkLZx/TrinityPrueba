@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductosRepository extends JpaRepository<Productos, Long> {
 
-    boolean existsByDueñoId(Long dueñoId);
+    boolean existsByClienteId(Long dueñoId);
 
-    boolean existsByDueñoIdAndExentaGMFTrue(Long clienteId);
+    boolean existsByClienteIdAndExentaGMFTrue(Long clienteId);
 
 }
