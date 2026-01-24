@@ -2,7 +2,6 @@ package com.example.TrinityPrueba.entities;
 
 
 import jakarta.persistence.*;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,13 +11,12 @@ import java.util.List;
 @Table(name = "clientes")
 public class Clientes {
 
-    //Correcion pendiente
-    @OneToMany
-    private List<Productos> tipoDeCuenta;
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    private List<Productos> productos;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     private String tipoDeIdentificacion;
     private String numeroIdentificacion;
@@ -33,30 +31,34 @@ public class Clientes {
     private LocalDateTime creacion;
     private LocalDateTime modificacion;
 
-    public List<Productos> getTipoDeCuenta() {
-        return tipoDeCuenta;
+    public List<Productos> getProductos() {
+        return productos;
     }
-    public void setTipoDeCuenta(List<Productos> tipoDeCuenta) {
-        this.tipoDeCuenta = tipoDeCuenta;
+
+    public void setProductos(List<Productos> productos) {
+        this.productos = productos;
     }
 
     public Long getId() {
-        return Id;
+        return id;
     }
+
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getTipoDeIdentificacion() {
         return tipoDeIdentificacion;
     }
-    public void setTipoDeIdentificacion(String tipoDeidentificacion) {
-        this.tipoDeIdentificacion = tipoDeidentificacion;
+
+    public void setTipoDeIdentificacion(String tipoDeIdentificacion) {
+        this.tipoDeIdentificacion = tipoDeIdentificacion;
     }
 
     public String getNumeroIdentificacion() {
         return numeroIdentificacion;
     }
+
     public void setNumeroIdentificacion(String numeroIdentificacion) {
         this.numeroIdentificacion = numeroIdentificacion;
     }
@@ -64,6 +66,7 @@ public class Clientes {
     public String getNombre() {
         return nombre;
     }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -71,6 +74,7 @@ public class Clientes {
     public String getApellido() {
         return apellido;
     }
+
     public void setApellido(String apellido) {
         this.apellido = apellido;
     }
@@ -78,13 +82,15 @@ public class Clientes {
     public String getMail() {
         return mail;
     }
+
     public void setMail(String mail) {
         this.mail = mail;
     }
 
     public LocalDate getNacimiento() {
-        return this.nacimiento;
+        return nacimiento;
     }
+
     public void setNacimiento(LocalDate nacimiento) {
         this.nacimiento = nacimiento;
     }
@@ -92,6 +98,7 @@ public class Clientes {
     public LocalDateTime getCreacion() {
         return creacion;
     }
+
     public void setCreacion(LocalDateTime creacion) {
         this.creacion = creacion;
     }
@@ -99,6 +106,7 @@ public class Clientes {
     public LocalDateTime getModificacion() {
         return modificacion;
     }
+
     public void setModificacion(LocalDateTime modificacion) {
         this.modificacion = modificacion;
     }
